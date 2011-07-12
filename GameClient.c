@@ -29,7 +29,6 @@ int main(void) {
 
 	send(sock, "Hello, world!", 13, 0);
 	onSockRead(sock);
-	exit(0);
 
 }
 
