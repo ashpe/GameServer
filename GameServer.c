@@ -24,9 +24,9 @@ void onSockRead(int sockfd);
 
 int main(void) {
 
-	int		listenfd, connfd;
-	pid_t	childpid;
-	socklen_t clilen, iplen;
+	int		   listenfd, connfd;
+	pid_t	           childpid;
+	socklen_t          clilen, iplen;
 	struct sockaddr_in cliaddr,servaddr, get_ip;
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -51,7 +51,7 @@ int main(void) {
 		connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
 		if ( (childpid = fork() ) == 0) {
 			close(listenfd);
-            send(connfd, "Hello, world!", 13, 0);
+                        send(connfd, "Hello, world!", 13, 0);
 			onSockRead(connfd);
 			exit(0);
 		}

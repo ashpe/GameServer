@@ -35,7 +35,7 @@ int main(void) {
 
 int connect_to(const char* address, int port) {
 
-	int		sockfd;
+	int		   sockfd;
 	struct sockaddr_in servaddr;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
