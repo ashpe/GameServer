@@ -25,12 +25,12 @@
 
 void onSockRead(int sockfd);
 static void * init_thread(void *arg);
-void getAddrInfo(struct addrinfo* results);
+addrinfo* getAddrInfo();
 struct ThreadParams {
       int connfd;
 };
 
-void getAddrInfo(struct addrinfo* results) {
+addrinfo* getAddrInfo() {
     
     int n;
     struct addrinfo hints, *result;
@@ -39,13 +39,11 @@ void getAddrInfo(struct addrinfo* results) {
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
-
     if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
             perror("error getting address info");
     }
 
-    *results=*result;
-
+    return result;
 }
 
 int main(void) {
@@ -62,9 +60,9 @@ int main(void) {
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERV_PORT);
 
-        //getAddrInfo(result);
+        result = getAddrInfo();
 
-	if ( bind( listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
+        if ( bind( listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
 		puts("bind() error");
 		exit(0);
 	}
@@ -73,12 +71,12 @@ int main(void) {
 	
         listen(listenfd, LISTENQ);
         socklen_t addrlen = result->ai_addrlen;
-        //struct sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
+        struct sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
 	for ( ; ; ) {
 		socklen_t len=addrlen;
-                //struct ThreadParams *tp = new ThreadParams;
-		//tp->connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
-		//pthread_create(&tid, NULL, &init_thread, tp);
+                struct ThreadParams *tp = new ThreadParams;
+		tp->connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
+		pthread_create(&tid, NULL, &init_thread, tp);
 	}
 }
 
