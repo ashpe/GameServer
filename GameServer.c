@@ -26,7 +26,9 @@
 void onSockRead(int sockfd);
 static void * init_thread(void *arg);
 void getAddrInfo(struct addrinfo* results);
-
+struct ThreadParams {
+      int connfd;
+};
 
 void getAddrInfo(struct addrinfo* results) {
     
@@ -48,47 +50,47 @@ void getAddrInfo(struct addrinfo* results) {
 
 int main(void) {
 
-	int		   listenfd, *iptr;
+	int		   listenfd;
 	pthread_t	   tid;
-	socklen_t          len, addrlen;
-	struct sockaddr_in *cliaddr,servaddr;
+	struct sockaddr_in servaddr;
         struct addrinfo *result;
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-	memset(&servaddr, 0, sizeof(servaddr));
+	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERV_PORT);
 
-        getAddrInfo(result);
+        //getAddrInfo(result);
 
-	if ( bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
+	if ( bind( listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
 		puts("bind() error");
 		exit(0);
 	}
-	printf("Listening for client connections @ %d..\n", SERV_PORT);
-	listen(listenfd, LISTENQ);
-        addrlen = result->ai_addrlen;
-        cliaddr = malloc( addrlen );
 
+	printf("Listening for client connections @ %d..\n", SERV_PORT);
+	
+        listen(listenfd, LISTENQ);
+        socklen_t addrlen = result->ai_addrlen;
+        //struct sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
 	for ( ; ; ) {
-		len=addrlen;
-                iptr = malloc( sizeof(int) );
-		*iptr = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
-		pthread_create(&tid, NULL, &init_thread, iptr);
+		socklen_t len=addrlen;
+                //struct ThreadParams *tp = new ThreadParams;
+		//tp->connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
+		//pthread_create(&tid, NULL, &init_thread, tp);
 	}
 }
 
 static void * init_thread(void *arg) {
 
-    int connfd = *((int *) arg);
-    free(arg);
-
+    struct ThreadParams *tp = new ThreadParams;
+    tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
-    onSockRead(connfd);
-    close(connfd);
-    return (NULL);
+    onSockRead(tp->connfd);
+    close(tp->connfd);
+    delete tp;
+    return (NULL); 
 
 }
 
