@@ -14,20 +14,45 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <string.h>
+#include <pthread.h>
+#include <netdb.h>
 #include <netinet/in.h>
+#include <stdlib.h>
 
 #define SERV_PORT 5558
 #define LISTENQ 32
 #define MAXLINE 4096
 
 void onSockRead(int sockfd);
+static void * init_thread(void *arg);
+void getAddrInfo(struct addrinfo* results);
+
+
+void getAddrInfo(struct addrinfo* results) {
+    
+    int n;
+    struct addrinfo hints, *result;
+    
+    bzero(&hints, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+
+    if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
+            perror("error getting address info");
+    }
+
+    *results=*result;
+
+}
 
 int main(void) {
 
-	int		   listenfd, connfd;
-	pid_t	           childpid;
-	socklen_t          clilen, iplen;
-	struct sockaddr_in cliaddr,servaddr, get_ip;
+	int		   listenfd, *iptr;
+	pthread_t	   tid;
+	socklen_t          len, addrlen;
+	struct sockaddr_in *cliaddr,servaddr;
+        struct addrinfo *result;
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -36,27 +61,35 @@ int main(void) {
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERV_PORT);
 
+        getAddrInfo(result);
 
 	if ( bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
 		puts("bind() error");
 		exit(0);
 	}
-
 	printf("Listening for client connections @ %d..\n", SERV_PORT);
-
 	listen(listenfd, LISTENQ);
+        addrlen = result->ai_addrlen;
+        cliaddr = malloc( addrlen );
 
 	for ( ; ; ) {
-		clilen = sizeof(cliaddr);
-		connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
-		if ( (childpid = fork() ) == 0) {
-			close(listenfd);
-                        send(connfd, "Hello, world!", 13, 0);
-			onSockRead(connfd);
-			exit(0);
-		}
-		close(connfd);
+		len=addrlen;
+                iptr = malloc( sizeof(int) );
+		*iptr = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
+		pthread_create(&tid, NULL, &init_thread, iptr);
 	}
+}
+
+static void * init_thread(void *arg) {
+
+    int connfd = *((int *) arg);
+    free(arg);
+
+    pthread_detach(pthread_self());
+    onSockRead(connfd);
+    close(connfd);
+    return (NULL);
+
 }
 
 void onSockRead(int sockfd) {
