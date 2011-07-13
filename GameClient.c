@@ -15,7 +15,7 @@ int main(void) {
 
 	int sock = connect_to("localhost", SERV_PORT);
 	puts("Connected successfully");
-        send(sock, "Connected to you", 16, 0);
+        send(sock, "S_OK", 4, 0);
         for( ; ; ) {
 
             onSockRead(sock);
@@ -53,7 +53,7 @@ void onSockRead(int sockfd) {
 	if (recv(sockfd, buf, sizeof buf, n)) {
 	    puts(buf);
             sleep(5);
-            send(sockfd, "Hello, world!", 13, 0);
+            send(sockfd, "pong!!", 6, 0);
         }
 
 }

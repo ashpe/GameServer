@@ -67,7 +67,7 @@ void onSockRead(int sockfd) {
                 puts(buf);
                 memset(buf, 0, sizeof(buf));
                 sleep(5);
-                send(sockfd, "Hello, world!", 13, 0);
+                send(sockfd, "ping!?", 6, 0);
             }
         }
 
