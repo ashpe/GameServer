@@ -1,57 +1,22 @@
 /*
  ============================================================================
  Name        : GameServer.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Author      : Ashley Pope 
+ Version     : -1.0
+ Copyright   : ...nobody would copy this (i hope)
+ Description : Basic game server
  ============================================================================
  */
 
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <pthread.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdlib.h>
+#include "GameConf.h"
+#include "GameServer.h"
 
-#define SERV_PORT 5558
-#define LISTENQ 32
-#define MAXLINE 4096
-
-void onSockRead(int sockfd);
-static void * init_thread(void *arg);
-addrinfo* getAddrInfo();
-struct ThreadParams {
-      int connfd;
-};
-
-addrinfo* getAddrInfo() {
-    
-    int n;
-    struct addrinfo hints, *result;
-    
-    bzero(&hints, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_protocol = IPPROTO_TCP;
-    if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
-            perror("error getting address info");
-    }
-
-    return result;
-}
 
 int main(void) {
-
 	int		   listenfd;
 	pthread_t	   tid;
-	struct sockaddr_in servaddr;
-        struct addrinfo *result;
+	sockaddr_in servaddr;
+        addrinfo *result;
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -71,10 +36,10 @@ int main(void) {
 	
         listen(listenfd, LISTENQ);
         socklen_t addrlen = result->ai_addrlen;
-        struct sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
+        sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
 	for ( ; ; ) {
 		socklen_t len=addrlen;
-                struct ThreadParams *tp = new ThreadParams;
+                ThreadParams *tp = new ThreadParams;
 		tp->connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
 		pthread_create(&tid, NULL, &init_thread, tp);
 	}
@@ -82,7 +47,7 @@ int main(void) {
 
 static void * init_thread(void *arg) {
 
-    struct ThreadParams *tp = new ThreadParams;
+    ThreadParams *tp = new ThreadParams;
     tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
     onSockRead(tp->connfd);
@@ -96,10 +61,31 @@ void onSockRead(int sockfd) {
 
 	ssize_t n;
 	char buf[MAXLINE];
+        
+        for ( ; ; ) {
+            if (recv(sockfd, buf, sizeof buf, n)) {
+                puts(buf);
+                memset(buf, 0, sizeof(buf));
+                sleep(5);
+                send(sockfd, "Hello, world!", 13, 0);
+            }
+        }
 
-	recv(sockfd, buf, sizeof buf, n);
+}
 
-	puts(buf);
+addrinfo* getAddrInfo() {
+    
+    int n;
+    addrinfo hints, *result;
+    
+    bzero(&hints, sizeof(struct addrinfo));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
+            perror("error getting address info");
+    }
 
+    return result;
 }
 

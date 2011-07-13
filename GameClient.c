@@ -1,35 +1,26 @@
 /*
  ============================================================================
  Name        : GameClient.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
+ Author      : Ashley Pope
+ Version     : -1.0
+ Copyright   : as if you would copy this!
+ Description : Game-client-thingy.
  ============================================================================
  */
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <netinet/in.h>
 
-#define SERV_PORT 5558
-#define LISTENQ 32
-#define MAXLINE 4096
-
-void onSockRead(int sockfd);
-int connect_to(const char* address, int port);
+#include "GameConf.h"
+#include "GameClient.h"
 
 int main(void) {
 
 	int sock = connect_to("localhost", SERV_PORT);
 	puts("Connected successfully");
+        send(sock, "Connected to you", 16, 0);
+        for( ; ; ) {
 
-	send(sock, "Hello, world!", 13, 0);
-	onSockRead(sock);
+            onSockRead(sock);
 
+        }
 }
 
 int connect_to(const char* address, int port) {
@@ -47,6 +38,7 @@ int connect_to(const char* address, int port) {
 
 	if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
 		perror("Error connecting to host");
+                exit(0);
 	} else {
 		return sockfd;
 	}
@@ -58,8 +50,10 @@ void onSockRead(int sockfd) {
 	ssize_t n;
 	char buf[MAXLINE];
 
-	recv(sockfd, buf, sizeof buf, n);
-
-	puts(buf);
+	if (recv(sockfd, buf, sizeof buf, n)) {
+	    puts(buf);
+            sleep(5);
+            send(sockfd, "Hello, world!", 13, 0);
+        }
 
 }
