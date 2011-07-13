@@ -27,7 +27,7 @@ int main(void) {
 
         result = getAddrInfo();
 
-        if ( bind( listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
+        if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
 		puts("bind() error");
 		exit(0);
 	}
@@ -40,7 +40,7 @@ int main(void) {
 	for ( ; ; ) {
 		socklen_t len=addrlen;
                 ThreadParams *tp = new ThreadParams;
-		tp->connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
+		tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
 		pthread_create(&tid, NULL, &init_thread, tp);
 	}
 }
@@ -78,7 +78,7 @@ addrinfo* getAddrInfo() {
     int n;
     addrinfo hints, *result;
     
-    bzero(&hints, sizeof(struct addrinfo));
+    bzero(&hints, sizeof(addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;

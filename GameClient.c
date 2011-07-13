@@ -26,7 +26,7 @@ int main(void) {
 int connect_to(const char* address, int port) {
 
 	int		   sockfd;
-	struct sockaddr_in servaddr;
+        sockaddr_in        servaddr;
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -36,7 +36,7 @@ int connect_to(const char* address, int port) {
 	servaddr.sin_port = htons(port);
 	inet_pton(AF_INET, address, &servaddr.sin_addr);
 
-	if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
+	if (connect(sockfd, (sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
 		perror("Error connecting to host");
                 exit(0);
 	} else {
