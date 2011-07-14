@@ -8,12 +8,22 @@
  ============================================================================
  */
 
+#include "AuthConf.h"
 #include "GameConf.h"
 #include "GameClient.h"
 
 int main(void) {
+        
+        char username[USERNAME_LEN];
+        char password[PASSWORD_LEN];
 
-	int sock = connect_to("localhost", SERV_PORT);
+        puts("**Login**");
+        printf("Enter username: ");
+        fgets(username, USERNAME_LEN, stdin);
+        printf("Enter password: ");
+        fgets(password, PASSWORD_LEN, stdin);
+        
+	int sock = connect_to("localhost", AUTH_PORT);
 	puts("Connected successfully");
         send(sock, "S_OK", 4, 0);
         for( ; ; ) {

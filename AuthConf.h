@@ -11,4 +11,5 @@
 #include <arpa/inet.h>
 
 #define AUTH_PORT 5554
-
+#define PASSWORD_LEN 20
+#define USERNAME_LEN 20
