@@ -18,7 +18,7 @@ int main(void) {
         send(sock, "S_OK", 4, 0);
         for( ; ; ) {
 
-            onSockRead(sock);
+            read_data(sock);
 
         }
 }
@@ -45,7 +45,7 @@ int connect_to(const char* address, int port) {
 
 }
 
-void onSockRead(int sockfd) {
+void read_data(int sockfd) {
 
 	ssize_t n;
 	char buf[MAXLINE];

@@ -50,14 +50,14 @@ static void * init_thread(void *arg) {
     ThreadParams *tp = new ThreadParams;
     tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
-    onSockRead(tp->connfd);
+    read_data(tp->connfd);
     close(tp->connfd);
     delete tp;
     return (NULL); 
 
 }
 
-void onSockRead(int sockfd) {
+void read_data(int sockfd) {
 
 	ssize_t n;
 	char buf[MAXLINE];

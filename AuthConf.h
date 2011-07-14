@@ -10,6 +10,5 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 
-#define SERV_PORT 5553
-#define LISTENQ 32
-#define MAXLINE 4096
+#define AUTH_PORT 5554
+
