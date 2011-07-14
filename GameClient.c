@@ -66,15 +66,24 @@ void read_data(int sockfd) {
 
 	ssize_t n;
 	char buf[MAXLINE];
+        char* resp;
 
-	if (recv(sockfd, buf, sizeof buf, n)) {
-	    chomp(buf);
-            if (strcmp(buf,"DIE") == 0) {
-                puts("Incorrect");
+        if (recv(sockfd, buf, sizeof buf, n)) {
+            puts(buf);
+            if (strstr(buf,"LOGIN")) {
+                puts("Logged in Successfully");
+                resp = "LOGGEDIN";
+            } else if (strcmp(buf,"DIE") == 0) {
+                puts("Incorrect login, bai");
                 exit(0);
+            } else if (strcmp(buf,"PING") == 0) {
+                sleep(5);
+                resp = "PONG";
             }
-            sleep(5);
-            send(sockfd, "pong!!", 6, 0);
+            
+            memset(buf, 0, sizeof(buf));
+
+            send(sockfd, resp, sizeof(resp), 0);
         }
 
 }

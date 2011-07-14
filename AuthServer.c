@@ -63,17 +63,19 @@ void read_data(int sockfd) {
         char* resp;
         for ( ; ; ) {
             if (recv(sockfd, buf, sizeof buf, n)) {
-                
+                puts(buf);
+
                 if (strstr(buf, "LOGIN")) {
                     printf("Checking user exists: %s\n", buf);
                     resp = check_login(buf);
-                } else if (strstr(buf, "PONG")) {
+                } else if (strstr(buf, "PONG") || strcmp(buf, "LOGGEDIN") == 0) {
                     sleep(5);
                     resp = "PING";
                 }
 
                 memset(buf, 0, sizeof(buf));
-                send(sockfd, resp, sizeof(resp), 0);
+
+                send(sockfd, resp, strlen(resp), 0);
             }
         }
 
@@ -82,9 +84,8 @@ char* check_login(char* login_string) {
     sqlite3 *conn;
     int error_check = 0;
 
-    char *split;
-    char *username = "ashpez";
-    char *password = "pass";
+    const char *username = "ashpe";
+    const char *password = "pass";
 
     error_check = sqlite3_open("auth_database", &conn);
 
@@ -107,11 +108,11 @@ char* check_login(char* login_string) {
     sqlite3_close(conn);
     
     if (error_check == 100) {
-        puts("User found.\n\n");
-        char *unique_key = "Unique_key_goes_here";
+        puts("User found.");
+        char *unique_key = "LOGIN:Unique_key_goes_here";
         return unique_key;
     } else {
-        puts("No records.\n\n");
+        puts("No records.");
         char *not_found = "DIE";
         return not_found;
     }
