@@ -11,7 +11,6 @@
 #include "AuthConf.h"
 #include "AuthServer.h"
 
-
 int main(void) {
 	int		   listenfd;
 	pthread_t	   tid;
@@ -23,7 +22,7 @@ int main(void) {
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(SERV_PORT);
+	servaddr.sin_port = htons(AUTH_PORT);
 
         result = getAddrInfo();
 
@@ -32,7 +31,7 @@ int main(void) {
 		exit(0);
 	}
 
-	printf("Listening for client connections @ %d..\n", SERV_PORT);
+	printf("Listening for client connections @ %d..\n", AUTH_PORT);
 	
         listen(listenfd, LISTENQ);
         socklen_t addrlen = result->ai_addrlen;
@@ -58,19 +57,67 @@ static void * init_thread(void *arg) {
 }
 
 void read_data(int sockfd) {
-
+        
 	ssize_t n;
 	char buf[MAXLINE];
-        
+        char* resp;
         for ( ; ; ) {
             if (recv(sockfd, buf, sizeof buf, n)) {
-                puts(buf);
+                
+                if (strstr(buf, "LOGIN")) {
+                    printf("Checking user exists: %s\n", buf);
+                    resp = check_login(buf);
+                } else if (strstr(buf, "PONG")) {
+                    sleep(5);
+                    resp = "PING";
+                }
+
                 memset(buf, 0, sizeof(buf));
-                sleep(5);
-                send(sockfd, "ping!?", 6, 0);
+                send(sockfd, resp, sizeof(resp), 0);
             }
         }
 
+}
+char* check_login(char* login_string) {
+    sqlite3 *conn;
+    int error_check = 0;
+
+    char *split;
+    char *username = "ashpez";
+    char *password = "pass";
+    split = strtok(login_string, ":");
+
+    error_check = sqlite3_open("auth_database", &conn);
+
+    if (error_check) {
+        puts("Cannot open database");
+        exit(0);
+    }
+
+    sqlite3_stmt *res;
+    const char *tail;
+    const char *sql_prep = "select * from auth_login where username=? and password=?";
+    
+    error_check = sqlite3_prepare_v2(conn, sql_prep, strlen(sql_prep), &res, &tail);
+    sqlite3_bind_text(res, 1, username, -1, SQLITE_STATIC);
+    sqlite3_bind_text(res, 2, password, -1, SQLITE_STATIC);
+    
+    error_check = sqlite3_step(res);
+
+    sqlite3_finalize(res);
+    sqlite3_close(conn);
+    
+    if (error_check == 100) {
+        puts("User found.\n\n");
+        char *unique_key = "Unique_key_goes_here";
+        return unique_key;
+    } else {
+        puts("No records.\n\n");
+        char *not_found = "DIE";
+        return not_found;
+    }
+
+    
 }
 
 addrinfo* getAddrInfo() {
@@ -82,7 +129,7 @@ addrinfo* getAddrInfo() {
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
-    if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
+    if ( (n = getaddrinfo("localhost", "5554", &hints, &result)) != 0) {
             perror("error getting address info");
     }
 

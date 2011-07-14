@@ -9,7 +9,9 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
+#include <string.h>
 
-#define AUTH_PORT 5554
+#define AUTH_PORT 4440
 #define PASSWORD_LEN 20
 #define USERNAME_LEN 20
+#define AUTH_LEN 50

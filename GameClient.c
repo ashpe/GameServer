@@ -16,21 +16,28 @@ int main(void) {
         
         char username[USERNAME_LEN];
         char password[PASSWORD_LEN];
-
+        char auth_string[AUTH_LEN];
         puts("**Login**");
         printf("Enter username: ");
         fgets(username, USERNAME_LEN, stdin);
+        chomp(username);
         printf("Enter password: ");
         fgets(password, PASSWORD_LEN, stdin);
-        
+        chomp(password);
+        snprintf(auth_string, AUTH_LEN, "LOGIN:%s:%s", username, password);
 	int sock = connect_to("localhost", AUTH_PORT);
-	puts("Connected successfully");
-        send(sock, "S_OK", 4, 0);
+        send(sock, auth_string, AUTH_LEN, 0);
         for( ; ; ) {
 
             read_data(sock);
 
         }
+}
+
+void chomp(char *string) {
+    char* p = strchr(string, '\n');
+    if (p)
+        *p = '\0';
 }
 
 int connect_to(const char* address, int port) {
@@ -61,7 +68,11 @@ void read_data(int sockfd) {
 	char buf[MAXLINE];
 
 	if (recv(sockfd, buf, sizeof buf, n)) {
-	    puts(buf);
+	    chomp(buf);
+            if (strcmp(buf,"DIE") == 0) {
+                puts("Incorrect");
+                exit(0);
+            }
             sleep(5);
             send(sockfd, "pong!!", 6, 0);
         }
