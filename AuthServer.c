@@ -85,7 +85,6 @@ char* check_login(char* login_string) {
     char *split;
     char *username = "ashpez";
     char *password = "pass";
-    split = strtok(login_string, ":");
 
     error_check = sqlite3_open("auth_database", &conn);
 
