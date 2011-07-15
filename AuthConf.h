@@ -1,15 +1,4 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <string.h>
-#include <pthread.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <arpa/inet.h>
-#include <string.h>
+
 
 #define AUTH_PORT 4439
 #define PASSWORD_LEN 20

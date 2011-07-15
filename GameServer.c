@@ -65,7 +65,7 @@ void read_data(int sockfd) {
         for ( ; ; ) {
             if (recv(sockfd, buf, sizeof buf, n)) {
                 puts(buf);
-                memset(buf, 0, sizeof(buf));
+                bzero(buf, sizeof(buf));
                 sleep(5);
                 send(sockfd, "ping!?", 6, 0);
             }

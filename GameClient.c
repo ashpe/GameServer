@@ -47,7 +47,7 @@ int connect_to(const char* address, int port) {
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
-	memset(&servaddr, 0, sizeof(servaddr));
+	bzero(&servaddr, sizeof(servaddr));
 
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(port);
@@ -81,7 +81,7 @@ void read_data(int sockfd) {
                 resp = "PONG";
             }
             
-            memset(buf, 0, sizeof(buf));
+            bzero(buf, sizeof(buf));
 
             send(sockfd, resp, sizeof(resp), 0);
         }

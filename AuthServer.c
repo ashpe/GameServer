@@ -11,6 +11,8 @@
 #include "AuthConf.h"
 #include "AuthServer.h"
 
+using namespace std;
+
 int main(void) {
 	int		   listenfd;
 	pthread_t	   tid;
@@ -60,7 +62,7 @@ void read_data(int sockfd) {
         
 	ssize_t n;
 	char buf[MAXLINE];
-        char* resp;
+        string resp;
         for ( ; ; ) {
             if (recv(sockfd, buf, sizeof buf, n)) {
                 puts(buf);
@@ -73,14 +75,15 @@ void read_data(int sockfd) {
                     resp = "PING";
                 }
 
-                memset(buf, 0, sizeof(buf));
+                bzero(buf, sizeof(buf));
 
-                send(sockfd, resp, strlen(resp), 0);
+                send(sockfd, resp.c_str(), resp.length(), 0);
             }
         }
 
 }
-char* check_login(char* login_string) {
+
+string check_login(char *login_string) {
     sqlite3 *conn;
     int error_check = 0;
 
@@ -109,11 +112,11 @@ char* check_login(char* login_string) {
     
     if (error_check == 100) {
         puts("User found.");
-        char *unique_key = "LOGIN:Unique_key_goes_here";
+        string unique_key = "LOGIN:Unique_key_goes_here";
         return unique_key;
     } else {
         puts("No records.");
-        char *not_found = "DIE";
+        string not_found = "DIE";
         return not_found;
     }
 
