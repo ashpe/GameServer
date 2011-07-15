@@ -23,8 +23,6 @@ int AuthDatabaseHandler::database_connect() {
 }
 
 int AuthDatabaseHandler::auth_user(char *username, char *password) {
- 
-    
   if (database_connect() == 0) {
       return 0;
   }
@@ -45,7 +43,6 @@ int AuthDatabaseHandler::auth_user(char *username, char *password) {
   } else {
       return 0;
   }
-
 }
 
 

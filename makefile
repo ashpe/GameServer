@@ -1,5 +1,5 @@
-all: server client auth_server AuthDatabaseHandler
-auth_server: AuthServer.o
+all: server client auth_server 
+auth_server: AuthServer.o AuthDatabaseHandler.o
 	g++ -o auth_server -g AuthServer.o AuthDatabaseHandler.o -lsqlite3
 server: GameServer.o
 	g++ -o server -g GameServer.o 
@@ -11,5 +11,4 @@ GameClient.o: GameClient.c GameConf.h GameClient.h AuthConf.h
 	g++ -c -Wall -g GameClient.c
 AuthServer.o: AuthServer.c AuthConf.h AuthServer.h AuthDatabaseHandler.h
 	g++ -c -Wall -g AuthServer.c
-AuthDatabaseHandler: AuthDatabaseHandler.o
 	g++ -c -Wall -g AuthDatabaseHandler.cpp -lsqlite3
