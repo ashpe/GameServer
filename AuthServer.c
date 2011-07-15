@@ -49,28 +49,27 @@ int main(void) {
 static void * init_thread(void *arg) {
 
     ThreadParams *tp = new ThreadParams;
+    AuthDatabaseHandler dbh("auth_database");
     tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
-    read_data(tp->connfd);
+    read_data(tp->connfd, dbh);
     close(tp->connfd);
     delete tp;
     return (NULL); 
 
 }
 
-void read_data(int sockfd) {
+void read_data(int sockfd, AuthDatabaseHandler dbh) {
         
 	ssize_t n;
 	char buf[MAXLINE];
         string resp;
         for ( ; ; ) {
             if (recv(sockfd, buf, sizeof buf, n)) {
-                puts(buf);
-
-                if (strstr(buf, "LOGIN")) {
-                    printf("Checking user exists: %s\n", buf);
-                    resp = check_login(buf);
-                } else if (strstr(buf, "PONG") || strcmp(buf, "LOGGEDIN") == 0) {
+                printf("DEBUG: %s", buf);
+                if (strstr(buf,"LOGIN")) {
+                    resp = check_login(buf, dbh);
+                } else if (strcmp(buf,"PONG") == 0 || strcmp(buf,"L_OK") == 0) {
                     sleep(5);
                     resp = "PING";
                 }
@@ -83,43 +82,19 @@ void read_data(int sockfd) {
 
 }
 
-string check_login(char *login_string) {
-    sqlite3 *conn;
-    int error_check = 0;
+string check_login(char *login_string, AuthDatabaseHandler dbh) {
 
-    const char *username = "ashpe";
-    const char *password = "pass";
-
-    error_check = sqlite3_open("auth_database", &conn);
-
-    if (error_check) {
-        puts("Cannot open database");
-        exit(0);
-    }
-
-    sqlite3_stmt *res;
-    const char *tail;
-    const char *sql_prep = "select * from auth_login where username=? and password=?";
+    string extract_details = login_string;
+    char *username = "root";
+    char *password = "";
     
-    error_check = sqlite3_prepare_v2(conn, sql_prep, strlen(sql_prep), &res, &tail);
-    sqlite3_bind_text(res, 1, username, -1, SQLITE_STATIC);
-    sqlite3_bind_text(res, 2, password, -1, SQLITE_STATIC);
-    
-    error_check = sqlite3_step(res);
+    cout << "Login details; " << extract_details << "\n";
 
-    sqlite3_finalize(res);
-    sqlite3_close(conn);
-    
-    if (error_check == 100) {
-        puts("User found.");
-        string unique_key = "LOGIN:Unique_key_goes_here";
-        return unique_key;
+    if (dbh.auth_user(username, password) == 1) {
+        return "LOGIN:UNIQUE_KEY_GOES_HERE";
     } else {
-        puts("No records.");
-        string not_found = "DIE";
-        return not_found;
+        return "DIE";
     }
-
     
 }
 

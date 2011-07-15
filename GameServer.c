@@ -11,6 +11,7 @@
 #include "GameConf.h"
 #include "GameServer.h"
 
+using namespace std;
 
 int main(void) {
 	int		   listenfd;

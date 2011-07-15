@@ -12,6 +12,8 @@
 #include "GameConf.h"
 #include "GameClient.h"
 
+using namespace std;
+
 int main(void) {
         
         char username[USERNAME_LEN];
@@ -24,7 +26,7 @@ int main(void) {
         printf("Enter password: ");
         fgets(password, PASSWORD_LEN, stdin);
         chomp(password);
-        snprintf(auth_string, AUTH_LEN, "LOGIN:%s:%s", username, password);
+        snprintf(auth_string, AUTH_LEN, "LOGIN\nUSER:%s\nPASS:%s", username, password);
 	int sock = connect_to("localhost", AUTH_PORT);
         send(sock, auth_string, AUTH_LEN, 0);
         for( ; ; ) {
@@ -66,13 +68,13 @@ void read_data(int sockfd) {
 
 	ssize_t n;
 	char buf[MAXLINE];
-        char* resp;
+        string resp;
 
         if (recv(sockfd, buf, sizeof buf, n)) {
             puts(buf);
             if (strstr(buf,"LOGIN")) {
                 puts("Logged in Successfully");
-                resp = "LOGGEDIN";
+                resp = "L_OK";
             } else if (strcmp(buf,"DIE") == 0) {
                 puts("Incorrect login, bai");
                 exit(0);
@@ -83,7 +85,7 @@ void read_data(int sockfd) {
             
             bzero(buf, sizeof(buf));
 
-            send(sockfd, resp, sizeof(resp), 0);
+            send(sockfd, resp.c_str(), resp.length(), 0);
         }
 
 }

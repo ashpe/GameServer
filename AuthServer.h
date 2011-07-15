@@ -11,19 +11,21 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <string>
+#include <iostream>
+
+
+//class includes
+#include "AuthDatabaseHandler.h"
 
 //Prototypes
-std::string check_login(char *login_string);
-void read_data(int sockfd);
+std::string check_login(char *login_string, AuthDatabaseHandler dbh);
+void read_data(int sockfd, AuthDatabaseHandler dbh);
 static void * init_thread(void *arg);
 addrinfo* getAddrInfo();
 struct ThreadParams {
       int connfd;
 };
 
-// Includes
-
-#include <sqlite3.h>
 
 // Defines
 
