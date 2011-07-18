@@ -11,8 +11,8 @@ class Packet {
 
     public: //naming for static
        Packet();
-       int packString();
+       void* packString();
 
     private: //naming for members
-
+       char* m_packetBuffer;
 };
