@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : PacketHandler.c
+ Name        : Packet.c
  Author      : Ashley Pope 
  Version     : -1.0
  Copyright   : ...nobody would copy this (i hope)
@@ -8,13 +8,13 @@
  ============================================================================
  */
 
-#include "PacketHandler.h"
+#include "Packet.h"
 
-PacketHandler::PacketHandler() {
+Packet::Packet() {
     // do nothing
 }
 
-int PacketHandler::packString() {
+int Packet::packString() {
     // do nothing
 }
 
