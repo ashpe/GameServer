@@ -38,11 +38,11 @@ int main(void) {
         listen(listenfd, LISTENQ);
         socklen_t addrlen = result->ai_addrlen;
         sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
-	for ( ; ; ) {
-		socklen_t len=addrlen;
-                ThreadParams *tp = new ThreadParams;
-		tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
-		pthread_create(&tid, NULL, &init_thread, tp);
+	for (;;) {
+            socklen_t len=addrlen;
+            ThreadParams *tp = new ThreadParams;
+	    tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
+	    pthread_create(&tid, NULL, &init_thread, tp);
 	}
 }
 
@@ -63,12 +63,12 @@ void read_data(int sockfd) {
 	ssize_t n;
 	char buf[MAXLINE];
         
-        for ( ; ; ) {
+        for (;;) {
             if (recv(sockfd, buf, sizeof buf, n)) {
                 puts(buf);
                 bzero(buf, sizeof(buf));
                 sleep(5);
-                send(sockfd, "ping!?", 6, 0);
+                send(sockfd, "PING", 4, 0);
             }
         }
 
