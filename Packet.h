@@ -4,14 +4,14 @@
 
 typedef struct {
     uint32_t packetType;
-    uint32_t packetLen
+    uint32_t packetLen;
 } PacketHeader;
 
 class Packet {
 
     public: //naming for static
        Packet();
-       void* packString(string packString);
+       void* packString(char* packString);
        void* packFloat(float packFloat);
        void* packInt32(uint32_t packInt32);
 

@@ -14,7 +14,7 @@ Packet::Packet() {
     // do nothing
 }
 
-void* Packet::packString(string packString) {
+void* Packet::packString(char* packString) {
     // do nothing
 }
 
