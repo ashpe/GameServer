@@ -1,4 +1,4 @@
-/*
+ /*
  ============================================================================
  Name        : GameServer.c
  Author      : Ashley Pope 
@@ -10,14 +10,15 @@
 
 #include "GameConf.h"
 #include "GameServer.h"
+#include "Packet.h"
 
 using namespace std;
 
 int main(void) {
-	int		   listenfd;
+	int	    	   listenfd;
 	pthread_t	   tid;
-	sockaddr_in servaddr;
-        addrinfo *result;
+	sockaddr_in  servaddr;
+  addrinfo     *result;
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -26,21 +27,27 @@ int main(void) {
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERV_PORT);
 
-        result = getAddrInfo();
+  result = getAddrInfo();
+  
+  Packet pck;
+  pck.packString("onetwothree");
+  pck.packString("fourfivesix");
+  pck.packInt32(12);
+  pck.send();
 
-        if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
-		puts("bind() error");
-		exit(0);
+  if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
+  puts("bind() error");
+	exit(0);
 	}
 
 	printf("Listening for client connections @ %d..\n", SERV_PORT);
 	
-        listen(listenfd, LISTENQ);
-        socklen_t addrlen = result->ai_addrlen;
-        sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
+  listen(listenfd, LISTENQ);
+  socklen_t addrlen = result->ai_addrlen;
+  sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
 	for (;;) {
-            socklen_t len=addrlen;
-            ThreadParams *tp = new ThreadParams;
+      socklen_t len=addrlen;
+      ThreadParams *tp = new ThreadParams;
 	    tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
 	    pthread_create(&tid, NULL, &init_thread, tp);
 	}
