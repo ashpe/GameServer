@@ -11,8 +11,11 @@ class Packet {
 
     public: //naming for static
        Packet();
-       void* packString();
+       void* packString(string packString);
+       void* packFloat(float packFloat);
+       void* packInt32(uint32_t packInt32);
 
     private: //naming for members
-       char* m_packetBuffer;
+       unsigned char *m_packetBuffer;
+       unsigned char *m_packet[32];
 };
