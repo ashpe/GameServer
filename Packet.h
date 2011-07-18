@@ -3,8 +3,8 @@
 #include <iostream>
 
 typedef struct {
-    uint32_t sender_id;
-    uint32_t data_length
+    uint32_t packetType;
+    uint32_t packetLen
 } PacketHeader;
 
 class Packet {
