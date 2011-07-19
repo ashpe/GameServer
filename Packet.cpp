@@ -25,17 +25,27 @@ void Packet::send() {
 }
 
 void Packet::Login(char *username, char *password, int version) {
-    Packets::LoginPacket login;
-    Packets::LoginPacket::PacketHeader* header = login.mutable_header();
-   
-    header->set_packet_type(LoginPacketType);
+    Packets::PacketHeader header;
 
-    login.set_username(username);
-    login.set_password(password);
-    login.set_version(version);
+    header.set_packet_type(LoginPacketType);
+   
+    std::cout << "Packet has login?: " << header.has_login_packet() << "\n";
+
+    Packets::PacketHeader::LoginPacket* login = header.mutable_login_packet();
+    login->set_username(username);
+    login->set_password(password);
+    login->set_version(version);
+   
+    std::cout << "PacketUsername: " << login->username() << "\n";
+    std::cout << "Packet has login?: " << header.has_login_packet() << "\n";
     
     std::string buf;
-    login.SerializeToString(&buf);
+    header.SerializeToString(&buf);
+    
+    Packets::PacketHeader header_test;
+    header_test.ParseFromString(buf);
+
+    std::cout << "Data: " << header_test.login_packet().username() << "\n";
 }
 
 int Packet::packString(char* packString) {

@@ -1,14 +1,15 @@
 package Packets;
 
-message LoginPacket {
     
-    message PacketHeader {
-      required int32 packet_type = 1;
-    }
-    
-    required PacketHeader header = 1;
+message PacketHeader {
+  
+  required int32 packet_type = 1;
+  optional LoginPacket login_packet = 2;
 
-    required string username = 2;
-    required string password = 3; 
-    optional int32 version  = 4;
+  message LoginPacket {
+      required string username = 2;
+      required string password = 3; 
+      optional int32 version  = 4;
+  }
+
 }
