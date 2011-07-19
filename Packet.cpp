@@ -25,13 +25,14 @@ void Packet::send() {
 int Packet::packString(char* packString) {
   printf("Packing string: %s\n", packString);
   
-  m_packet = (unsigned char*) malloc(PACKET_SIZE);
+  newPacket();
+
   memcpy((char *)m_packet, packString, PACKET_SIZE);
   strcat((char *)m_packetBuffer, (char *)m_packet);
-  free(m_packet);
-  m_packetHeader->packetLen += PACKET_SIZE;
   
   printf("Result: %s\nSize: %d\n", m_packetBuffer, m_packetHeader->packetLen);
+
+  free(m_packet);
   return 1;
 }
 
@@ -40,16 +41,18 @@ int Packet::packFloat(float packFloat) {
 }
 
 int Packet::packInt32(uint32_t packInt32) {
-  unsigned char bytes[INT_PACKET]; 
+  newPacket(); 
   unsigned char hexBase = 0xff; // A byte of all ones
   
-  bytes[0] = hexBase & packInt32;
-  bytes[1] = ((hexBase << 8) & packInt32) >> 8;
-  bytes[2] = ((hexBase << 16) & packInt32) >> 16;
-  bytes[3] = ((hexBase << 24) & packInt32) >> 24;
+  m_packet[0] = hexBase & packInt32;
+  m_packet[1] = ((hexBase << 8) & packInt32) >> 8;
+  m_packet[2] = ((hexBase << 16) & packInt32) >> 16;
+  m_packet[3] = ((hexBase << 24) & packInt32) >> 24;
     
-  m_packetHeader->packetLen += PACKET_SIZE;
-  printf("Size:%d\n", m_packetHeader->packetLen);
+  printf("Readint: %d\nSize:%d\n", m_packetHeader->packetLen);
+
+  free(m_packet);
+
   return 1;
 }
 
@@ -60,3 +63,9 @@ int Packet::readInt32(unsigned char bytes[INT_PACKET]) {
   myInt = (myInt << 8) | bytes[0];
   return myInt;
 }
+
+void Packet::newPacket() {
+    m_packet = (unsigned char*) malloc(PACKET_SIZE);
+    m_packetHeader->packetLen += PACKET_SIZE;
+}
+

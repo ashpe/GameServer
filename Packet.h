@@ -40,4 +40,5 @@ class Packet {
        unsigned char *m_packetBuffer;
        unsigned char *m_packet;
        PacketHeader *m_packetHeader;
+       void newPacket();
 };
