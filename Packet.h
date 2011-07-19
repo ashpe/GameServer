@@ -1,23 +1,43 @@
+//Includes
 #include <stdint.h>
 #include <string>
 #include <iostream>
 
+//defines
+
+#define PACKET_SIZE 32
+#define INT_PACKET 3
+#define MAX_BUFFER 960 //this is packet * 30
+
+//packet types
+
+enum PacketTypes {
+    pingPacketType = 1,
+    // Sends one string (ping/pong) to check sockets alive
+    loginPacketType = 2,
+    // Sends username (string) then password (string)
+};
+
+//packet header
 typedef struct {
     uint32_t packetType;
     uint32_t packetLen;
 } PacketHeader;
 
+//class definition
+
 class Packet {
 
     public: //naming for static
-       Packet();
+       Packet(int packetType);
        void send();
        int packString(char* packString);
        int packFloat(float packFloat);
        int packInt32(uint32_t packInt32);
-       int unpackInt32(unsigned char bytes[4]);
+       int readInt32(unsigned char bytes[INT_PACKET]);
 
     private: //naming for members
        unsigned char *m_packetBuffer;
-       unsigned char *m_packet[32];
+       unsigned char *m_packet;
+       PacketHeader *m_packetHeader;
 };

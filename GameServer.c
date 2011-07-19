@@ -28,8 +28,8 @@ int main(void) {
 	servaddr.sin_port = htons(SERV_PORT);
 
   result = getAddrInfo();
-  
-  Packet pck;
+ 
+  Packet pck(loginPacketType);
   pck.packString("onetwothree");
   pck.packString("fourfivesix");
   pck.packInt32(12);
