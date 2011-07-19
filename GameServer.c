@@ -30,9 +30,7 @@ int main(void) {
   result = getAddrInfo();
  
   Packet pck(loginPacketType);
-  pck.packString("onetwothree");
-  pck.packString("fourfivesix");
-  pck.packInt32(12);
+  pck.Login("ashpe", "test", 1);
   pck.send();
 
   if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {

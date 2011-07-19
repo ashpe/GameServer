@@ -9,6 +9,8 @@
  */
 
 #include "Packet.h"
+#include "Packet.pb.h"
+#include <google/protobuf/message_lite.h>
 
 Packet::Packet(int packetType) {
   m_packetBuffer = (unsigned char*) malloc(MAX_BUFFER);
@@ -20,6 +22,22 @@ Packet::Packet(int packetType) {
 
 void Packet::send() {
   puts("sent! (not)");
+}
+
+void Packet::Login(char *username, char *password, int version) {
+    Packets::LoginPacket login;
+    login.set_username(username);
+    login.set_password(password);
+    login.set_version(version);
+
+    std::string buf;
+    login.SerializeToString(&buf);
+    printf("Data: %s\n", buf.data());
+
+    Packets::LoginPacket login_two;
+    login_two.ParseFromString(buf);
+    std::cout << "Username: " << login_two.username() << "\n";
+    
 }
 
 int Packet::packString(char* packString) {

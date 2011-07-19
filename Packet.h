@@ -30,6 +30,7 @@ class Packet {
 
     public: //naming for static
        Packet(int packetType);
+       void Login(char *username, char *password, int version);
        void send();
        int packString(char* packString);
        int packFloat(float packFloat);
