@@ -1,0 +1,9 @@
+
+package Packets;
+
+message LoginPacket {
+  required string username = 1;
+  required string password = 2; 
+  optional int32 version  = 3;
+}
+
