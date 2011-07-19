@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : Packet.c
+ Name        : Packet.cpp
  Author      : Ashley Pope 
  Version     : -1.0
  Copyright   : ...nobody would copy this (i hope)
- Description : Basic game server
+ Description : Packets of packets.
  ============================================================================
  */
 
@@ -26,7 +26,7 @@ int Packet::packString(char* packString) {
   printf("Packing string: %s\n", packString);
   
   newPacket();
-
+  
   memcpy((char *)m_packet, packString, PACKET_SIZE);
   strcat((char *)m_packetBuffer, (char *)m_packet);
   
@@ -48,8 +48,9 @@ int Packet::packInt32(uint32_t packInt32) {
   m_packet[1] = ((hexBase << 8) & packInt32) >> 8;
   m_packet[2] = ((hexBase << 16) & packInt32) >> 16;
   m_packet[3] = ((hexBase << 24) & packInt32) >> 24;
-    
-  printf("Readint: %d\nSize:%d\n", m_packetHeader->packetLen);
+  strcat((char *)m_packetBuffer, (char *)m_packet);
+
+  printf("Buffer: %s\nSize:%d\n", m_packetBuffer, m_packetHeader->packetLen);
 
   free(m_packet);
 
