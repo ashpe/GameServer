@@ -29,7 +29,7 @@ int main(void) {
 
   result = getAddrInfo();
  
-  Packet pck(loginPacketType);
+  Packet pck(LoginPacketType);
   pck.Login("ashpe", "test", 1);
   pck.send();
 

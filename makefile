@@ -17,7 +17,7 @@ AuthDatabaseHandler.o: AuthDatabaseHandler.cpp AuthDatabaseHandler.h
 Packet.o: Packet.cpp Packet.h protoc_middleman
 	g++ -c -Wall -g Packet.cpp Packet.pb.cc 
 Packet.pb.o: Packet.pb.cc Packet.pb.h protoc_middleman
-	g++ -c -Wall -g Packet.pb.c
+	g++ -c -Wall -g Packet.pb.cc
 protoc_middleman: Packet.proto
 	protoc --cpp_out=. Packet.proto
 	@touch protoc_middleman

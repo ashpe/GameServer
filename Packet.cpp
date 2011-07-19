@@ -26,18 +26,16 @@ void Packet::send() {
 
 void Packet::Login(char *username, char *password, int version) {
     Packets::LoginPacket login;
+    Packets::LoginPacket::PacketHeader* header = login.mutable_header();
+   
+    header->set_packet_type(LoginPacketType);
+
     login.set_username(username);
     login.set_password(password);
     login.set_version(version);
-
+    
     std::string buf;
     login.SerializeToString(&buf);
-    printf("Data: %s\n", buf.data());
-
-    Packets::LoginPacket login_two;
-    login_two.ParseFromString(buf);
-    std::cout << "Username: " << login_two.username() << "\n";
-    
 }
 
 int Packet::packString(char* packString) {

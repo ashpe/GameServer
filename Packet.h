@@ -12,9 +12,9 @@
 //packet types
 
 enum PacketTypes {
-    pingPacketType = 1,
+    PingPacketType = 1,
     // Sends one string (ping/pong) to check sockets alive
-    loginPacketType = 2,
+    LoginPacketType = 2,
     // Sends username (string) then password (string)
 };
 
