@@ -1,4 +1,4 @@
-package Packets;
+package Packet;
 
     
 message PacketHeader {

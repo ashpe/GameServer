@@ -10,33 +10,33 @@
 
 #include "GameConf.h"
 #include "GameServer.h"
-#include "Packet.h"
+#include "PacketHandler.h"
 
 using namespace std;
 
 int main(void) {
-	int	    	   listenfd;
-	pthread_t	   tid;
-	sockaddr_in  servaddr;
-  addrinfo     *result;
+  int	  	   listenfd;
+  pthread_t	   tid;
+  sockaddr_in      servaddr;
+  addrinfo         *result;
+   
+  listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-	listenfd = socket(AF_INET, SOCK_STREAM, 0);
-
-	bzero(&servaddr, sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(SERV_PORT);
+  bzero(&servaddr, sizeof(servaddr));
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  servaddr.sin_port = htons(SERV_PORT);
 
   result = getAddrInfo();
  
-  Packet pck(LoginPacketType);
+  PacketHandler pck(LoginPacketType);
   pck.Login("ashpe", "test", 1);
   pck.send();
 
   if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
   puts("bind() error");
 	exit(0);
-	}
+   }
 
 	printf("Listening for client connections @ %d..\n", SERV_PORT);
 	
@@ -44,10 +44,10 @@ int main(void) {
   socklen_t addrlen = result->ai_addrlen;
   sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
 	for (;;) {
-      socklen_t len=addrlen;
-      ThreadParams *tp = new ThreadParams;
-	    tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
-	    pthread_create(&tid, NULL, &init_thread, tp);
+          socklen_t len=addrlen;
+          ThreadParams *tp = new ThreadParams;
+	  tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
+	  pthread_create(&tid, NULL, &init_thread, tp);
 	}
 }
 
