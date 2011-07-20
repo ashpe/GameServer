@@ -51,7 +51,7 @@ int main(void) {
 static void * init_thread(void *arg) {
 
     ThreadParams *tp = new ThreadParams;
-    AuthDatabaseHandler dbh("auth_database");
+    AuthDatabaseHandler dbh((char*)AUTH_DATABASE);
     tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
     read_data(tp->connfd, dbh);
@@ -66,7 +66,6 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
     ssize_t n;
     char buf[MAXLINE];
     string resp;
-    puts("Reading data..");
     for ( ; ; ) {
         if (recv(sockfd, buf, sizeof buf, n)) {
 

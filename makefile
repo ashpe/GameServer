@@ -1,6 +1,7 @@
-all: server client auth_server 
+all: server client auth_server
+clean: rm AuthServer.o AuthDatabaseHandler.o PacketHandler.o Packet.pb.o GameServer.o GameClient.o \
+    Packet.pb.cc Packet.pb.h
 auth_server: AuthServer.o AuthDatabaseHandler.o PacketHandler.o
-	pkg-config --cflags protobuf  # fails if protobuf is not installed
 	g++ -o auth_server -g AuthServer.o AuthDatabaseHandler.o PacketHandler.o Packet.pb.o -lsqlite3 `pkg-config --cflags --libs protobuf`  
 server: GameServer.o PacketHandler.o Packet.pb.o protoc_middleman
 	g++ -o server -g GameServer.o PacketHandler.o Packet.pb.o `pkg-config --cflags --libs protobuf` 
