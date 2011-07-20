@@ -19,6 +19,7 @@ int main(void) {
 
     char username[USERNAME_LEN];
     char password[PASSWORD_LEN];
+   
     puts("**Login**");
     printf("Enter username: ");
     fgets(username, USERNAME_LEN, stdin);
@@ -29,8 +30,11 @@ int main(void) {
 
     PacketHandler pck(LoginPacketType);
     std::string login_string = pck.Login(username, password, 1.0);
+    
     int sock = connect_to("localhost", AUTH_PORT);
     send(sock, login_string.data(), login_string.length(), 0);
+    
+    
     for( ; ; ) {
 
         read_data(sock);

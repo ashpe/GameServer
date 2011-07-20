@@ -81,8 +81,10 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
             }
 
             bzero(buf, sizeof(buf));
-
-            send(sockfd, resp.c_str(), resp.length(), 0);
+            
+            if (resp) {
+                send(sockfd, resp.c_str(), resp.length(), 0);
+            }
         }
     }
 
