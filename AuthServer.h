@@ -18,7 +18,7 @@
 #include "AuthDatabaseHandler.h"
 
 //Prototypes
-std::string check_login(char *login_string, AuthDatabaseHandler dbh);
+std::string check_login(std::string username, std::string password, AuthDatabaseHandler dbh);
 void read_data(int sockfd, AuthDatabaseHandler dbh);
 static void * init_thread(void *arg);
 addrinfo* getAddrInfo();

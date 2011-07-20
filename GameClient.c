@@ -11,6 +11,7 @@
 #include "AuthConf.h"
 #include "GameConf.h"
 #include "GameClient.h"
+#include "PacketHandler.h"
 
 using namespace std;
 
@@ -18,7 +19,6 @@ int main(void) {
 
     char username[USERNAME_LEN];
     char password[PASSWORD_LEN];
-    char auth_string[AUTH_LEN];
     puts("**Login**");
     printf("Enter username: ");
     fgets(username, USERNAME_LEN, stdin);
@@ -26,9 +26,11 @@ int main(void) {
     printf("Enter password: ");
     fgets(password, PASSWORD_LEN, stdin);
     chomp(password);
-    snprintf(auth_string, AUTH_LEN, "LOGIN\nUSER:%s\nPASS:%s", username, password);
+
+    PacketHandler pck(LoginPacketType);
+    std::string login_string = pck.Login(username, password, 1.0);
     int sock = connect_to("localhost", AUTH_PORT);
-    send(sock, auth_string, AUTH_LEN, 0);
+    send(sock, login_string.data(), login_string.length(), 0);
     for( ; ; ) {
 
         read_data(sock);

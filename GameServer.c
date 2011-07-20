@@ -10,7 +10,6 @@ Description : Basic game server
 
 #include "GameConf.h"
 #include "GameServer.h"
-#include "PacketHandler.h"
 
 using namespace std;
 
@@ -28,10 +27,6 @@ int main(void) {
     servaddr.sin_port = htons(SERV_PORT);
 
     result = getAddrInfo();
-
-    PacketHandler pck(LoginPacketType);
-    pck.Login("ashpe", "test", 1);
-    pck.send();
 
     if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
         puts("bind() error");

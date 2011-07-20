@@ -10,6 +10,8 @@
 
 #include "AuthConf.h"
 #include "AuthServer.h"
+#include "PacketHandler.h"
+
 
 using namespace std;
 
@@ -64,12 +66,17 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
     ssize_t n;
     char buf[MAXLINE];
     string resp;
+    puts("Reading data..");
     for ( ; ; ) {
         if (recv(sockfd, buf, sizeof buf, n)) {
-            printf("DEBUG: %s", buf);
-            if (strstr(buf,"LOGIN")) {
-                resp = check_login(buf, dbh);
-            } else if (strcmp(buf,"PONG") == 0 || strcmp(buf,"L_OK") == 0) {
+
+            Packet::PacketHeader header;
+            header.ParseFromString(buf);
+            
+            if (header.has_login_packet()) {
+                resp = check_login(header.login_packet().username(), header.login_packet().password(), dbh);
+            }
+            else if (strcmp(buf,"PONG") == 0 || strcmp(buf,"L_OK") == 0) {
                 sleep(5);
                 resp = "PING";
             }
@@ -82,15 +89,9 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
 
 }
 
-string check_login(char *login_string, AuthDatabaseHandler dbh) {
+string check_login(string username, string password, AuthDatabaseHandler dbh) {
 
-    string extract_details = login_string;
-    char *username = "root";
-    char *password = "";
-
-    cout << "Login details; " << extract_details << "\n";
-
-    if (dbh.auth_user(username, password) == 1) {
+    if (dbh.auth_user((char *)username.data(), (char *)password.data()) == 1) {
         return "LOGIN:UNIQUE_KEY_GOES_HERE";
     } else {
         return "DIE";

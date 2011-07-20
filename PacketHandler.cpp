@@ -9,7 +9,6 @@
  */
 
 #include "PacketHandler.h"
-#include "Packet.pb.h"
 #include <google/protobuf/message_lite.h>
 
 PacketHandler::PacketHandler(int packetType) {
@@ -24,28 +23,18 @@ void PacketHandler::send() {
     puts("sent! (not)");
 }
 
-void PacketHandler::Login(char *username, char *password, int version) {
+std::string PacketHandler::Login(char *username, char *password, int version) {
     Packet::PacketHeader header;
-
-    header.set_packet_type(LoginPacketType);
-
-    std::cout << "Packet has login?: " << header.has_login_packet() << "\n";
 
     Packet::PacketHeader::LoginPacket* login = header.mutable_login_packet();
     login->set_username(username);
     login->set_password(password);
     login->set_version(version);
 
-    std::cout << "PacketUsername: " << login->username() << "\n";
-    std::cout << "Packet has login?: " << header.has_login_packet() << "\n";
-
     std::string buf;
     header.SerializeToString(&buf);
 
-    Packet::PacketHeader header_test;
-    header_test.ParseFromString(buf);
-
-    std::cout << "Data: " << header_test.login_packet().username() << "\n";
+    return buf;
 }
 
 int PacketHandler::packString(char* packString) {

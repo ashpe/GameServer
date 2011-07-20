@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <string>
 #include <iostream>
+#include "Packet.pb.h"
 
 //defines
 
@@ -30,7 +31,7 @@ class PacketHandler {
 
     public: //naming for static
        PacketHandler(int packetType);
-       void Login(char *username, char *password, int version);
+       std::string Login(char *username, char *password, int version);
        void send();
        int packString(char* packString);
        int packFloat(float packFloat);

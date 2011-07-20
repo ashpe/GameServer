@@ -3,7 +3,6 @@ package Packet;
     
 message PacketHeader {
   
-  required int32 packet_type = 1;
   optional LoginPacket login_packet = 2;
 
   message LoginPacket {
