@@ -82,7 +82,7 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
 
             bzero(buf, sizeof(buf));
             
-            if (resp) {
+            if (resp.length() > 0) {
                 send(sockfd, resp.c_str(), resp.length(), 0);
             }
         }
@@ -91,11 +91,14 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
 }
 
 string check_login(string username, string password, AuthDatabaseHandler dbh) {
-
+    PacketHandler pck;
+    string auth_code;
     if (dbh.auth_user((char *)username.data(), (char *)password.data()) == 1) {
-        return "LOGIN:UNIQUE_KEY_GOES_HERE";
+        auth_code = pck.auth_code("uniqueauthcode");
+        return auth_code;
     } else {
-        return "DIE";
+        auth_code = "failure";
+        return auth_code;
     }
 
 }

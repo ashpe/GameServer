@@ -30,8 +30,9 @@ typedef struct {
 class PacketHandler {
 
     public: //naming for static
-       PacketHandler(int packetType);
-       std::string Login(char *username, char *password, int version);
+       PacketHandler();
+       std::string login(char *username, char *password, int version);
+       std::string auth_code(char *auth_code);
        void send();
        int packString(char* packString);
        int packFloat(float packFloat);

@@ -27,19 +27,51 @@ int main(void) {
     printf("Enter password: ");
     fgets(password, PASSWORD_LEN, stdin);
     chomp(password);
+    
+    printf("Authing user: %s ..\n", username);
 
-    PacketHandler pck(LoginPacketType);
-    std::string login_string = pck.Login(username, password, 1.0);
+    PacketHandler pck;
+    std::string login_string = pck.login(username, password, 1.0);
     
-    int sock = connect_to("localhost", AUTH_PORT);
-    send(sock, login_string.data(), login_string.length(), 0);
-    
-    
+    int auth_sock = connect_to("localhost", AUTH_PORT);
+    send(auth_sock, login_string.data(), login_string.length(), 0);
+
+    string auth_code = get_auth_code(auth_sock);
+    int serv_sock;
+
+    if (auth_code.length() > 0) {
+        puts("Connecting to game server..");
+        serv_sock =  connect_to("localhost", SERV_PORT); 
+    } else {
+        //prompt to login again
+        exit(0);
+    }
+
     for( ; ; ) {
 
-        read_data(sock);
+        read_data(serv_sock);
 
     }
+}
+
+string get_auth_code(int sockfd) {
+    ssize_t n;
+    char buf[MAXLINE];
+    string auth_code;
+
+    if (recv(sockfd, buf, sizeof buf, n)) {
+        Packet::PacketHeader pck;
+        pck.ParseFromString(buf);
+    
+        if (pck.has_auth_code()) {
+            puts("Auth successsfull");
+            auth_code = pck.auth_code();
+        } else {
+            puts("Auth failure");
+        }
+    }
+
+    return auth_code;
 }
 
 void chomp(char *string) {

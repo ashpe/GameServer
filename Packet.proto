@@ -2,7 +2,8 @@ package Packet;
     
 message PacketHeader {
   
-  optional LoginPacket login_packet = 2;
+  optional LoginPacket login_packet = 1;
+  optional string auth_code = 2;
 
   message LoginPacket {
       required string username = 2;

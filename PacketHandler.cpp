@@ -11,19 +11,13 @@
 #include "PacketHandler.h"
 #include <google/protobuf/message_lite.h>
 
-PacketHandler::PacketHandler(int packetType) {
-    m_packetBuffer = (unsigned char*) malloc(MAX_BUFFER);
-    m_packetHeader = new PacketHeader;
-    m_packetHeader->packetLen = 32;
-    m_packetHeader->packetType = packetType;
-    puts("Packet initiated.");
-}
+PacketHandler::PacketHandler() { }
 
 void PacketHandler::send() {
     puts("sent! (not)");
 }
 
-std::string PacketHandler::Login(char *username, char *password, int version) {
+std::string PacketHandler::login(char *username, char *password, int version) {
     Packet::PacketHeader header;
 
     Packet::PacketHeader::LoginPacket* login = header.mutable_login_packet();
@@ -31,6 +25,17 @@ std::string PacketHandler::Login(char *username, char *password, int version) {
     login->set_password(password);
     login->set_version(version);
 
+    std::string buf;
+    header.SerializeToString(&buf);
+
+    return buf;
+}
+
+std::string PacketHandler::auth_code(char *auth_code) {
+    Packet::PacketHeader header;
+
+    header.set_auth_code(auth_code);
+     
     std::string buf;
     header.SerializeToString(&buf);
 
