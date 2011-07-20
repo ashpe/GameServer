@@ -1,12 +1,12 @@
- /*
- ============================================================================
- Name        : GameServer.c
- Author      : Ashley Pope 
- Version     : -1.0
- Copyright   : ...nobody would copy this (i hope)
- Description : Basic game server
- ============================================================================
- */
+/*
+============================================================================
+Name        : GameServer.c
+Author      : Ashley Pope
+Version     : -1.0
+Copyright   : ...nobody would copy this (i hope)
+Description : Basic game server
+============================================================================
+*/
 
 #include "GameConf.h"
 #include "GameServer.h"
@@ -15,40 +15,40 @@
 using namespace std;
 
 int main(void) {
-  int	  	   listenfd;
-  pthread_t	   tid;
-  sockaddr_in      servaddr;
-  addrinfo         *result;
-   
-  listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    int	  	   listenfd;
+    pthread_t	   tid;
+    sockaddr_in      servaddr;
+    addrinfo         *result;
 
-  bzero(&servaddr, sizeof(servaddr));
-  servaddr.sin_family = AF_INET;
-  servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-  servaddr.sin_port = htons(SERV_PORT);
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
 
-  result = getAddrInfo();
- 
-  PacketHandler pck(LoginPacketType);
-  pck.Login("ashpe", "test", 1);
-  pck.send();
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(SERV_PORT);
 
-  if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
-  puts("bind() error");
-	exit(0);
-   }
+    result = getAddrInfo();
 
-	printf("Listening for client connections @ %d..\n", SERV_PORT);
-	
-  listen(listenfd, LISTENQ);
-  socklen_t addrlen = result->ai_addrlen;
-  sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
-	for (;;) {
-          socklen_t len=addrlen;
-          ThreadParams *tp = new ThreadParams;
-	  tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
-	  pthread_create(&tid, NULL, &init_thread, tp);
-	}
+    PacketHandler pck(LoginPacketType);
+    pck.Login("ashpe", "test", 1);
+    pck.send();
+
+    if ( bind( listenfd, (sockaddr *) &servaddr, sizeof(servaddr) ) == -1) {
+        puts("bind() error");
+        exit(0);
+    }
+
+    printf("Listening for client connections @ %d..\n", SERV_PORT);
+
+    listen(listenfd, LISTENQ);
+    socklen_t addrlen = result->ai_addrlen;
+    sockaddr_in *cliaddr = (sockaddr_in *) malloc( addrlen );
+    for (;;) {
+        socklen_t len=addrlen;
+        ThreadParams *tp = new ThreadParams;
+        tp->connfd = accept(listenfd, (sockaddr *) &cliaddr, &len);
+        pthread_create(&tid, NULL, &init_thread, tp);
+    }
 }
 
 static void * init_thread(void *arg) {
@@ -59,37 +59,37 @@ static void * init_thread(void *arg) {
     read_data(tp->connfd);
     close(tp->connfd);
     delete tp;
-    return (NULL); 
+    return (NULL);
 
 }
 
 void read_data(int sockfd) {
 
-	ssize_t n;
-	char buf[MAXLINE];
-        
-        for (;;) {
-            if (recv(sockfd, buf, sizeof buf, n)) {
-                puts(buf);
-                bzero(buf, sizeof(buf));
-                sleep(5);
-                send(sockfd, "PING", 4, 0);
-            }
+    ssize_t n;
+    char buf[MAXLINE];
+
+    for (;;) {
+        if (recv(sockfd, buf, sizeof buf, n)) {
+            puts(buf);
+            bzero(buf, sizeof(buf));
+            sleep(5);
+            send(sockfd, "PING", 4, 0);
         }
+    }
 
 }
 
 addrinfo* getAddrInfo() {
-    
+
     int n;
     addrinfo hints, *result;
-    
+
     bzero(&hints, sizeof(addrinfo));
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
     if ( (n = getaddrinfo("localhost", "5558", &hints, &result)) != 0) {
-            perror("error getting address info");
+        perror("error getting address info");
     }
 
     return result;
