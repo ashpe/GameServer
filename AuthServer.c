@@ -75,11 +75,7 @@ void read_data(int sockfd, AuthDatabaseHandler dbh) {
             if (header.has_login_packet()) {
                 resp = check_login(header.login_packet().username(), header.login_packet().password(), dbh);
             }
-            else if (strcmp(buf,"PONG") == 0 || strcmp(buf,"L_OK") == 0) {
-                sleep(5);
-                resp = "PING";
-            }
-
+            
             bzero(buf, sizeof(buf));
             
             if (resp.length() > 0) {
