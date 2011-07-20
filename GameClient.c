@@ -31,17 +31,18 @@ int main(void) {
     printf("Authing user: %s ..\n", username);
 
     PacketHandler pck;
-    std::string login_string = pck.login(username, password, 1.0);
+    string login_string = pck.login_packet(username, password, 1.0);
     
     int auth_sock = connect_to("localhost", AUTH_PORT);
     send(auth_sock, login_string.data(), login_string.length(), 0);
-
-    string auth_code = get_auth_code(auth_sock);
+    
+    string auth_code = pck.auth_code_packet((char *)get_auth_code(auth_sock).c_str());
     int serv_sock;
 
     if (auth_code.length() > 0) {
         puts("Connecting to game server..");
-        serv_sock =  connect_to("localhost", SERV_PORT); 
+        serv_sock =  connect_to("localhost", SERV_PORT);
+        send(serv_sock, auth_code.data(), auth_code.length(), 0);
     } else {
         //prompt to login again
         exit(0);
@@ -64,8 +65,8 @@ string get_auth_code(int sockfd) {
         pck.ParseFromString(buf);
     
         if (pck.has_auth_code()) {
-            puts("Auth successsfull");
             auth_code = pck.auth_code();
+            printf("Auth successsfull, unique key is: %s\n", auth_code.c_str());
         } else {
             puts("Auth failure");
         }
@@ -109,21 +110,22 @@ void read_data(int sockfd) {
     string resp;
 
     if (recv(sockfd, buf, sizeof buf, n)) {
-        puts(buf);
-        if (strstr(buf,"LOGIN")) {
-            puts("Logged in Successfully");
-            resp = "L_OK";
-        } else if (strcmp(buf,"DIE") == 0) {
-            puts("Incorrect login, bai");
-            exit(0);
-        } else if (strcmp(buf,"PING") == 0) {
-            sleep(5);
-            resp = "PONG";
+        Packet::PacketHeader pck;
+        pck.ParseFromString(buf);
+        
+        if (pck.has_connected_packet()) {
+            if (pck.connected_packet().has_connected()) {
+                puts("Successfully connected to game server");
+            } else {
+                puts("Incorrect Auth Key, please try login again..");
+                exit(0);
+            }
         }
-
         bzero(buf, sizeof(buf));
 
-        send(sockfd, resp.c_str(), resp.length(), 0);
+        if (resp.length() > 0) {
+            send(sockfd, resp.c_str(), resp.length(), 0);
+        }
     }
 
 }

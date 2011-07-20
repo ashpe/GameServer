@@ -94,7 +94,8 @@ string check_login(string username, string password, AuthDatabaseHandler dbh) {
     PacketHandler pck;
     string auth_code;
     if (dbh.auth_user((char *)username.data(), (char *)password.data()) == 1) {
-        auth_code = pck.auth_code("uniqueauthcode");
+        auth_code = pck.auth_code_packet("uniqueauthcode");
+        dbh.add_unique_code((char *)username.c_str(), (char *)password.c_str(), "uniqueauthcode");
         return auth_code;
     } else {
         auth_code = "failure";

@@ -10,6 +10,7 @@ Description : Basic game server
 
 #include "GameConf.h"
 #include "GameServer.h"
+#include "PacketHandler.h"
 
 using namespace std;
 
@@ -49,26 +50,46 @@ int main(void) {
 static void * init_thread(void *arg) {
 
     ThreadParams *tp = new ThreadParams;
+    AuthDatabaseHandler dbh((char*)AUTH_DATABASE);
     tp->connfd = *((int *) arg);
     pthread_detach(pthread_self());
-    read_data(tp->connfd);
+    read_data(tp->connfd, dbh);
     close(tp->connfd);
     delete tp;
     return (NULL);
 
 }
 
-void read_data(int sockfd) {
+void read_data(int sockfd, AuthDatabaseHandler dbh) {
 
     ssize_t n;
     char buf[MAXLINE];
+    string resp;
+    PacketHandler pck;
 
     for (;;) {
         if (recv(sockfd, buf, sizeof buf, n)) {
-            puts(buf);
+            
+            Packet::PacketHeader header;
+            header.ParseFromString(buf);
+
+            if (header.has_auth_code()) {
+                puts("Checking auth code in database..");
+                string auth_code = header.auth_code();
+                if (dbh.auth_code((char *)auth_code.c_str()) == 1) {
+                    resp = pck.connected_packet(true);
+                    puts("Auth code validated, successfully connected to game server.");
+                } else {
+                    resp = pck.connected_packet(false);
+                    puts("Error, auth code sucks. Exiting..");
+                }
+            }
+
             bzero(buf, sizeof(buf));
-            sleep(5);
-            send(sockfd, "PING", 4, 0);
+
+            if (resp.length() > 0) {
+                send(sockfd, resp.c_str(), resp.length(), 0);
+            }
         }
     }
 

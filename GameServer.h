@@ -12,7 +12,9 @@
 #include <iostream>
 #include <string>
 
-void read_data(int sockfd);
+#include "AuthDatabaseHandler.h"
+
+void read_data(int sockfd, AuthDatabaseHandler dbh);
 static void * init_thread(void *arg);
 addrinfo* getAddrInfo();
 struct ThreadParams {

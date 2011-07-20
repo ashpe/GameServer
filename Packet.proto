@@ -3,7 +3,13 @@ package Packet;
 message PacketHeader {
   
   optional LoginPacket login_packet = 1;
-  optional string auth_code = 2;
+  optional ConnectedPacket connected_packet = 2;
+  optional string auth_code = 3;
+
+  message ConnectedPacket {
+      optional int32 connected = 1;
+      optional string character_list = 2;
+  }
 
   message LoginPacket {
       required string username = 2;

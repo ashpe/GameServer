@@ -31,13 +31,9 @@ class PacketHandler {
 
     public: //naming for static
        PacketHandler();
-       std::string login(char *username, char *password, int version);
-       std::string auth_code(char *auth_code);
-       void send();
-       int packString(char* packString);
-       int packFloat(float packFloat);
-       int packInt32(uint32_t packInt32);
-       int readInt32(unsigned char bytes[INT_PACKET]);
+       std::string login_packet(char *username, char *password, int version);
+       std::string auth_code_packet(char *auth_code);
+       std::string connected_packet(bool conn);
 
     private: //naming for members
        unsigned char *m_packetBuffer;

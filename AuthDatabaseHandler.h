@@ -7,7 +7,9 @@ class AuthDatabaseHandler {
 
     public: //naming for static
        AuthDatabaseHandler(char *database_name="auth_database");
+       int add_unique_code(char *username, char *password, char *code);
        int auth_user(char *username, char *password);
+       int auth_code(char *code);
        int getErrorCheck();
 
     private: //naming for members
