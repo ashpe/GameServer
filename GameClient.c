@@ -69,6 +69,7 @@ string get_auth_code(int sockfd) {
             printf("Auth successsfull, unique key is: %s\n", auth_code.c_str());
         } else {
             puts("Auth failure");
+            exit(0);
         }
     }
 
@@ -121,6 +122,7 @@ void read_data(int sockfd) {
                 exit(0);
             }
         }
+        
         bzero(buf, sizeof(buf));
 
         if (resp.length() > 0) {
